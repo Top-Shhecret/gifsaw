@@ -18,11 +18,23 @@ const scaleFactor = 2;
 function preload() {
   const params = new URLSearchParams(window.location.search);
   const gifUrl = params.get('gif_url');
-  if (gifUrl) {
-    gif = loadImage(gifUrl);
-  } else {
-    gif = loadImage('https://media1.giphy.com/media/Y8dKrq2sDjQ5y/giphy.gif');
+  
+  function onLoad() {
+    console.log('GIF loaded successfully:', gifUrl || 'default');
   }
+
+  function onError(err) {
+    console.error('Failed to load GIF:', gifUrl || 'default', err);
+  }
+
+  const url = gifUrl || 'https://media1.giphy.com/media/Y8dKrq2sDjQ5y/giphy.gif';
+
+  gif = loadImage(
+    url,
+    onLoad,
+    onError,
+    { crossOrigin: '' }
+  );
 }
 
 
