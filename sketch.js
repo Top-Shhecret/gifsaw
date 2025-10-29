@@ -16,8 +16,15 @@ let edgeConfigs = [];
 const scaleFactor = 2;
 
 function preload() {
-  gif = loadImage('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2sxZmFyNGpudW1oZ3FvdzB6MnByMGFocHpnMGViZjczZjh2ajdnOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y8dKrq2sDjQ5y/giphy.gif');
+  const params = new URLSearchParams(window.location.search);
+  const gifUrl = params.get('gif_url');
+  if (gifUrl) {
+    gif = loadImage(gifUrl);
+  } else {
+    gif = loadImage('https://media1.giphy.com/media/Y8dKrq2sDjQ5y/giphy.gif');
+  }
 }
+
 
 function setup() {
   pixelDensity(1);
