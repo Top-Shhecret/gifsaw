@@ -522,7 +522,6 @@ function checkSnap(index) {
     if (dist < snapDist) {
       alignGroups(piece.index, neighbor.index, dir);
       mergeGroups(piece.index, neighbor.index);
-      click.play();
     }
   }
 }
@@ -559,4 +558,5 @@ function mergeGroups(aIndex, bIndex) {
 
   let merged = [...new Set([...groupA, ...groupB])];
   for (let i of merged) pieces[i].group = merged;
+  click.play();
 }
