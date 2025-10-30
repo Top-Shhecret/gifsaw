@@ -13,6 +13,7 @@ const rotationConst = 1;
 const globalTabSize = 0.30
 const idealTotalPieces = 32;
 let edgeConfigs = [];
+let click;
 
 function preload() {
   const params = new URLSearchParams(window.location.search);
@@ -34,6 +35,8 @@ function preload() {
     onError,
     { crossOrigin: '' }
   );
+
+  click = loadSound('click.mp3')
 }
 
 
@@ -516,6 +519,7 @@ function checkSnap(index) {
     if (dist < snapDist) {
       alignGroups(piece.index, neighbor.index, dir);
       mergeGroups(piece.index, neighbor.index);
+      click.play();
     }
   }
 }
