@@ -11,10 +11,11 @@ let offsetX = 0;
 let offsetY = 0;
 const rotationConst = 1;
 const globalTabSize = 0.30
-const idealTotalPieces = 32;
+const idealTotalPieces = 120;
 let edgeConfigs = [];
 let click;
 let timerValue = 0;
+let timerInterval;
 
 function preload() {
   const params = new URLSearchParams(window.location.search);
@@ -106,7 +107,20 @@ function setup() {
       pieces.push(p);
     }
   }
-  setInterval(timeIt, 1000);
+  timerInterval = setInterval(timeIt, 1000);
+}
+
+function checkPuzzleComplete() {
+  if (pieces.length === 0) return false;
+
+  const firstGroup = pieces[0].group;
+
+  for (let p of pieces) {
+    if (p.group !== firstGroup) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function cachePieceMask(p) {
@@ -574,4 +588,8 @@ function mergeGroups(aIndex, bIndex) {
   let merged = [...new Set([...groupA, ...groupB])];
   for (let i of merged) pieces[i].group = merged;
   click.play();
+  if (checkPuzzleComplete()) {
+    clearInterval(timerInterval); // stop the timer
+    console.log("Puzzle complete in " + timerValue + " seconds!");
+  }
 }
