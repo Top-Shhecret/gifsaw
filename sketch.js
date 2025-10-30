@@ -14,6 +14,7 @@ const globalTabSize = 0.30
 const idealTotalPieces = 32;
 let edgeConfigs = [];
 let click;
+let timerValue = 0;
 
 function preload() {
   const params = new URLSearchParams(window.location.search);
@@ -39,11 +40,16 @@ function preload() {
   click = loadSound('click.mp3')
 }
 
+function timeIt() {
+  timerValue++;
+}
 
 function setup() {
   pixelDensity(1);
   noSmooth();
   createCanvas(windowWidth, windowHeight);
+  textAlign(CENTER, CENTER);
+  textSize(50);
   let screenArea = windowWidth * windowHeight;
   let gifArea = gif.width * gif.height;
   let targetArea = screenArea * 0.3;
@@ -100,6 +106,7 @@ function setup() {
       pieces.push(p);
     }
   }
+  setInterval(timeIt, 1000);
 }
 
 function cachePieceMask(p) {
@@ -241,8 +248,16 @@ function getEdgeType(row, col, side) {
 }
 
 function draw() {
-  //console.log(frameRate());
   background(220);
+
+  // Calculate hours, minutes, and seconds
+  let hours = floor(timerValue / 3600);
+  let minutes = floor((timerValue % 3600) / 60);
+  let seconds = timerValue % 60;
+
+  // Display the timer in H:MM:SS format
+  text(hours + ':' + nf(minutes, 2) + ':' + nf(seconds, 2), width - 100, 40);
+
   if (gif.numFrames) gif.setFrame(currentFrame);
   currentFrameImage = gif.get();
 
