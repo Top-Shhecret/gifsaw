@@ -422,6 +422,9 @@ function drawTab(pg, x1, y1, x2, y2, offset, orientation, angleDeg = 0, widthMul
 }
 
 function mousePressed() {
+  if (getAudioContext().state !== 'running') {
+    getAudioContext().resume();
+  }
   for (let i = pieces.length - 1; i >= 0; i--) {
     let p = pieces[i];
     let tabSize = min(pieceW, pieceH) * globalTabSize;
