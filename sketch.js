@@ -11,20 +11,19 @@ let offsetX = 0;
 let offsetY = 0;
 const rotationConst = 1;
 const globalTabSize = 0.30
-const idealTotalPieces = 16;
+const idealTotalPieces = 32;
 let edgeConfigs = [];
-const scaleFactor = 2;
 
 function preload() {
   const params = new URLSearchParams(window.location.search);
   const gifUrl = params.get('gif_url');
-  
+
   function onLoad() {
     console.log('GIF loaded successfully:', gifUrl || 'default');
   }
 
   function onError(err) {
-    console.error('Failed to load GIF:', gifUrl || 'default', err);
+    console.error('Gif failed to load:', gifUrl || 'default', err);
   }
 
   const url = gifUrl || 'https://media1.giphy.com/media/Y8dKrq2sDjQ5y/giphy.gif';
@@ -41,10 +40,14 @@ function preload() {
 function setup() {
   pixelDensity(1);
   noSmooth();
+  createCanvas(windowWidth, windowHeight);
+  let screenArea = windowWidth * windowHeight;
+  let gifArea = gif.width * gif.height;
+  let targetArea = screenArea * 0.3;
+  let scaleFactor = sqrt(targetArea / gifArea);
+
   gif.resize(gif.width * scaleFactor, gif.height * scaleFactor);
-  createCanvas(gif.width * 2.5, gif.height * 2.5);
-  console.log(gif.width * 2.5, gif.height * 2.5)
-  frameRate(12);
+  frameRate(30);
 
   numFrames = gif.numFrames ? gif.numFrames() : 1;
   currentFrame = 0;
@@ -289,12 +292,12 @@ function drawPieceFast(i) {
 
 function drawPieceShape(pg, row, col, x, y, w, h, left, right, up, down) {
   let tabSize = min(w, h) * globalTabSize;
-  
+
   pg.beginShape();
-  
+
   // Start top-left
   pg.vertex(x, y);
-  
+
   // Top edge
   if (up === 0) {
     pg.vertex(x + w, y);
@@ -304,7 +307,7 @@ function drawPieceShape(pg, row, col, x, y, w, h, left, right, up, down) {
     pg.vertex(x + w * 0.7, y);
     pg.vertex(x + w, y);
   }
-  
+
   // Right edge
   if (right === 0) {
     pg.vertex(x + w, y + h);
@@ -314,7 +317,7 @@ function drawPieceShape(pg, row, col, x, y, w, h, left, right, up, down) {
     pg.vertex(x + w, y + h * 0.7);
     pg.vertex(x + w, y + h);
   }
-  
+
   // Bottom edge
   if (down === 0) {
     pg.vertex(x, y + h);
@@ -324,7 +327,7 @@ function drawPieceShape(pg, row, col, x, y, w, h, left, right, up, down) {
     pg.vertex(x + w * 0.3, y + h);
     pg.vertex(x, y + h);
   }
-  
+
   // Left edge
   if (left === 0) {
     pg.vertex(x, y);
@@ -334,7 +337,7 @@ function drawPieceShape(pg, row, col, x, y, w, h, left, right, up, down) {
     pg.vertex(x, y + h * 0.3);
     pg.vertex(x, y);
   }
-  
+
   pg.endShape(CLOSE);
 }
 
@@ -344,7 +347,7 @@ function drawTab(pg, x1, y1, x2, y2, offset, orientation, angleDeg = 0, widthMul
   // Tab proportions with random width
   let baseWidth = 0.15; // Base stem width ratio
   let baseBulb = 0.35; // Base bulb radius ratio
-  
+
   let stemWidth = edgeLength * baseWidth * widthMult;
   let bulbRadius = edgeLength * baseBulb * widthMult;
   let tabDepth = offset;
@@ -377,7 +380,9 @@ function drawTab(pg, x1, y1, x2, y2, offset, orientation, angleDeg = 0, widthMul
       [midX - stemWidth * direction, y1 + bulbStart + (tabDepth - bulbStart) * 0.3, midX - bulbRadius * 0.8 * direction, y1 + tabDepth * 0.6, midX - bulbRadius * direction, y1 + tabDepth * 0.9],
       [midX - bulbRadius * 0.6 * direction, y1 + tabDepth, midX + bulbRadius * 0.6 * direction, y1 + tabDepth, midX + bulbRadius * direction, y1 + tabDepth * 0.9],
       [midX + bulbRadius * 0.8 * direction, y1 + tabDepth * 0.6, midX + stemWidth * direction, y1 + bulbStart + (tabDepth - bulbStart) * 0.3, midX + stemWidth * direction, y1 + bulbStart],
-      [midX + stemWidth * direction, y1 + bulbStart * 0.8, midX + stemWidth * direction, y1 + tabDepth * 0.15, x2, y2]
+      [midX + stemWidth * direction, y1 + bulbStart * 0.9,
+      midX + stemWidth * direction, y1 + bulbStart * 0.7,
+        x2, y2]
     ];
 
     for (let cp of pts) {
@@ -393,14 +398,14 @@ function drawTab(pg, x1, y1, x2, y2, offset, orientation, angleDeg = 0, widthMul
     let direction = y2 > y1 ? 1 : -1;
 
     let pts = [
-      [x1 + bulbStart * 0.7, midY - stemWidth * direction, x1 + bulbStart * 0.9, midY - stemWidth * direction, 
-       x1 + bulbStart, midY - stemWidth * direction],
-      [x1 + bulbStart + (tabDepth - bulbStart) * 0.3, midY - stemWidth * direction, x1 + tabDepth * 0.6, midY - 
-       bulbRadius * 0.8 * direction, x1 + tabDepth * 0.9, midY - bulbRadius * direction],
-      [x1 + tabDepth, midY - bulbRadius * 0.6 * direction, x1 + tabDepth, midY + bulbRadius * 0.6 * direction, 
-       x1 + tabDepth * 0.9, midY + bulbRadius * direction],
-      [x1 + tabDepth * 0.6, midY + bulbRadius * 0.8 * direction, x1 + bulbStart + (tabDepth - bulbStart) * 0.3, 
-       midY + stemWidth * direction, x1 + bulbStart, midY + stemWidth * direction],
+      [x1 + bulbStart * 0.7, midY - stemWidth * direction, x1 + bulbStart * 0.9, midY - stemWidth * direction,
+      x1 + bulbStart, midY - stemWidth * direction],
+      [x1 + bulbStart + (tabDepth - bulbStart) * 0.3, midY - stemWidth * direction, x1 + tabDepth * 0.6, midY -
+        bulbRadius * 0.8 * direction, x1 + tabDepth * 0.9, midY - bulbRadius * direction],
+      [x1 + tabDepth, midY - bulbRadius * 0.6 * direction, x1 + tabDepth, midY + bulbRadius * 0.6 * direction,
+      x1 + tabDepth * 0.9, midY + bulbRadius * direction],
+      [x1 + tabDepth * 0.6, midY + bulbRadius * 0.8 * direction, x1 + bulbStart + (tabDepth - bulbStart) * 0.3,
+      midY + stemWidth * direction, x1 + bulbStart, midY + stemWidth * direction],
       [x1 + bulbStart * 0.9, midY + stemWidth * direction, x1 + tabDepth * 0.15, midY + stemWidth * direction, x2, y2]
     ];
 
@@ -417,7 +422,7 @@ function mousePressed() {
   for (let i = pieces.length - 1; i >= 0; i--) {
     let p = pieces[i];
     let tabSize = min(pieceW, pieceH) * globalTabSize;
-    
+
     // Calculate max extension for hit detection
     let maxExtendX = Math.max(
       p.col > 0 && getEdgeType(p.row, p.col, 'left') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'left') : 0,
@@ -427,7 +432,7 @@ function mousePressed() {
       p.row > 0 && getEdgeType(p.row, p.col, 'up') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'up') : 0,
       p.row < rows - 1 && getEdgeType(p.row, p.col, 'down') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'down') : 0
     );
-    
+
     if (
       mouseX > p.x - maxExtendX &&
       mouseX < p.x + pieceW + maxExtendX &&
