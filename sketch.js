@@ -13,7 +13,7 @@ let offsetX = 0
 let offsetY = 0
 const rotationConst = 1
 const globalTabSize = 0.30
-const idealTotalPieces = 120
+const idealTotalPieces = 60
 let edgeConfigs = []
 let click
 let timerValue = 0
@@ -63,7 +63,7 @@ function setup() {
   let scaleFactor = sqrt(targetArea / gifArea)
 
   gif.resize(gif.width * scaleFactor, gif.height * scaleFactor)
-  frameRate(30)
+  frameRate(24)
 
   numFrames = gif.numFrames ? gif.numFrames() : 1
   currentFrame = 0
