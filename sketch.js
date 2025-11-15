@@ -18,8 +18,9 @@ let click
 let timerValue = 0
 let timerInterval
 let frameCounter = 0
-let releaseModeDrag = false
+let releaseModeDrag = true
 let buttonText = "Select Mode"
+let modeButton
 
 function preload() {
   const params = new URLSearchParams(window.location.search)
@@ -116,7 +117,8 @@ function setup() {
   timerInterval = setInterval(timeIt, 1000)
 
   let modeButton = createButton(buttonText)
-  modeButton.position(width - 100, 40)
+  modeButton.position(width - 100, 10)
+  modeButton.size
   modeButton.mousePressed(changeMode)
 }
 
@@ -307,42 +309,43 @@ function draw() {
   }
 
   if (releaseModeDrag === false) {
-    if (draggingPiece !== null) {
-      let basePiece = pieces[draggingPiece]
-      let targetX = mouseX - offsetX
-      let targetY = mouseY - offsetY
-      let dx = targetX - basePiece.x
-      let dy = targetY - basePiece.y
+    dragging()
+  }
+  if (draggingPiece !== null) {
+    for (let i of draggingGroup) drawPieceFast(i)
+  }
+}
 
-      // Get the group being moved
-      let group = draggingGroup.map(i => pieces[i])
+function dragging() {
+  if (draggingPiece !== null) {
+    let basePiece = pieces[draggingPiece]
+    let targetX = mouseX - offsetX
+    let targetY = mouseY - offsetY
+    let dx = targetX - basePiece.x
+    let dy = targetY - basePiece.y
 
-      // Compute bounding box of the group
-      let minX = min(group.map(p => p.x))
-      let minY = min(group.map(p => p.y))
-      let maxX = max(group.map(p => p.x + pieceW))
-      let maxY = max(group.map(p => p.y + pieceH))
+    // Get the group being moved
+    let group = draggingGroup.map(i => pieces[i])
 
-      // How far can the group move without going off the edges?
-      let allowedDx = dx
-      let allowedDy = dy
+    // Compute bounding box of the group
+    let minX = min(group.map(p => p.x))
+    let minY = min(group.map(p => p.y))
+    let maxX = max(group.map(p => p.x + pieceW))
+    let maxY = max(group.map(p => p.y + pieceH))
 
-      if (minX + dx < 0) allowedDx = -minX
-      if (maxX + dx > width) allowedDx = width - maxX
-      if (minY + dy < 0) allowedDy = -minY
-      if (maxY + dy > height) allowedDy = height - maxY
+    // How far can the group move without going off the edges?
+    let allowedDx = dx
+    let allowedDy = dy
 
-      // Apply only the allowed movement to all pieces in the group
-      for (let p of group) {
-        p.x += allowedDx
-        p.y += allowedDy
-      }
+    if (minX + dx < 0) allowedDx = -minX
+    if (maxX + dx > width) allowedDx = width - maxX
+    if (minY + dy < 0) allowedDy = -minY
+    if (maxY + dy > height) allowedDy = height - maxY
 
-      for (let i of draggingGroup) drawPieceFast(i)
-    }
-  } else {
-    if (draggingPiece !== null) {
-      for (let i of draggingGroup) drawPieceFast(i)
+    // Apply only the allowed movement to all pieces in the group
+    for (let p of group) {
+      p.x += allowedDx
+      p.y += allowedDy
     }
   }
 }
@@ -552,37 +555,7 @@ function mousePressed() {
 }
 
 function mouseDragged() {
-  if (draggingPiece !== null) {
-    let basePiece = pieces[draggingPiece]
-    let targetX = mouseX - offsetX
-    let targetY = mouseY - offsetY
-    let dx = targetX - basePiece.x
-    let dy = targetY - basePiece.y
-
-    // Get the group being moved
-    let group = draggingGroup.map(i => pieces[i])
-
-    // Compute bounding box of the group
-    let minX = min(group.map(p => p.x))
-    let minY = min(group.map(p => p.y))
-    let maxX = max(group.map(p => p.x + pieceW))
-    let maxY = max(group.map(p => p.y + pieceH))
-
-    // How far can the group move without going off the edges?
-    let allowedDx = dx
-    let allowedDy = dy
-
-    if (minX + dx < 0) allowedDx = -minX
-    if (maxX + dx > width) allowedDx = width - maxX
-    if (minY + dy < 0) allowedDy = -minY
-    if (maxY + dy > height) allowedDy = height - maxY
-
-    // Apply only the allowed movement to all pieces in the group
-    for (let p of group) {
-      p.x += allowedDx
-      p.y += allowedDy
-    }
-  }
+  dragging()
 }
 
 function mouseReleased() {
