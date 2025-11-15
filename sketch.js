@@ -283,6 +283,7 @@ function draw() {
     console.log(currentFrame)
     if (gif.numFrames) gif.setFrame(currentFrame)
     currentFrameImage = gif.get()
+    frameCounter = 0
   }
 
   // Gif timing changes
