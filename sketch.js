@@ -572,7 +572,7 @@ function mouseReleased() {
 }
 
 function checkSnap(index) {
-  const snapDist = 1
+  const snapDist = 5
   const pw = pieceW
   const ph = pieceH
 
@@ -601,8 +601,8 @@ function checkSnap(index) {
       if (releaseModeDrag === false) {
         //draggingPiece = null
         //draggingGroup = []
-        offsetX = mouseX - piece.x;
-        offsetY = mouseY - piece.y;
+        //offsetX = mouseX - piece.x;
+        //offsetY = mouseY - piece.y;
       }
     }
   }
