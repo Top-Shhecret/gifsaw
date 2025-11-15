@@ -123,11 +123,11 @@ function setup() {
 }
 
 function changeMode() {
-  if (modeButton.html() === "Select Mode") {
-    modeButton.html("Drag Mode")
+  if (modeButton.text === "Select Mode") {
+    modeButton.text = "Drag Mode"
     releaseModeDrag = false
   } else {
-    modeButton.html("SelectMode")
+    modeButton.text = "SelectMode"
     releaseModeDrag = true
   }
 }
