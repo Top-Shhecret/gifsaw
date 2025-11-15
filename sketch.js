@@ -523,37 +523,34 @@ function mousePressed() {
     getAudioContext().resume()
   }
 
-  if (draggingPiece !== null) {
+  if (releaseModeDrag === false && draggingPiece !== null) {
     draggingPiece = null;
     draggingGroup = [];
     return;
   }
 
+  if (releaseModeDrag === true && draggingPiece !== null) {
+    return
+  }
   for (let i = pieces.length - 1; i >= 0; i--) {
-    let p = pieces[i]
-    let tabSize = min(pieceW, pieceH) * globalTabSize
+    let p = pieces[i];
+    let group = p.group.map(idx => pieces[idx]);
 
-    // Calculate max extension for hit detection
-    let maxExtendX = Math.max(
-      p.col > 0 && getEdgeType(p.row, p.col, 'left') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'left') : 0,
-      p.col < cols - 1 && getEdgeType(p.row, p.col, 'right') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'right') : 0
-    )
-    let maxExtendY = Math.max(
-      p.row > 0 && getEdgeType(p.row, p.col, 'up') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'up') : 0,
-      p.row < rows - 1 && getEdgeType(p.row, p.col, 'down') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'down') : 0
-    )
+    // Compute merged group bounding box
+    let minX = Math.min(...group.map(g => g.x));
+    let minY = Math.min(...group.map(g => g.y));
+    let maxX = Math.max(...group.map(g => g.x + pieceW));
+    let maxY = Math.max(...group.map(g => g.y + pieceH));
 
-    if (
-      mouseX > p.x - maxExtendX &&
-      mouseX < p.x + pieceW + maxExtendX &&
-      mouseY > p.y - maxExtendY &&
-      mouseY < p.y + pieceH + maxExtendY
-    ) {
-      draggingPiece = i
-      draggingGroup = p.group.slice()
-      offsetX = mouseX - p.x
-      offsetY = mouseY - p.y
-      break
+    if (mouseX >= minX && mouseX <= maxX && mouseY >= minY && mouseY <= maxY) {
+
+      // Select this whole group
+      draggingPiece = i;
+      draggingGroup = p.group.slice();
+
+      offsetX = mouseX - p.x;
+      offsetY = mouseY - p.y;
+      return;
     }
   }
 }
