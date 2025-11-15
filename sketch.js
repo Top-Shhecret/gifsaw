@@ -65,6 +65,8 @@ function setup() {
 
   numFrames = gif.numFrames ? gif.numFrames() : 1
   currentFrame = 0
+  if (gif.numFrames) gif.setFrame(currentFrame)
+  currentFrameImage = gif.get()
 
   let aspectRatio = gif.width / gif.height
   rows = round(sqrt(idealTotalPieces / aspectRatio))
@@ -280,8 +282,10 @@ function draw() {
   gifFrameTimer += deltaTime
   if (gifFrameTimer >= 1000 / fps) {
     currentFrame = (currentFrame + 1) % numFrames
-    if (gif.numFrames) gif.setFrame(currentFrame)
-    currentFrameImage = gif.get()
+    if (gif.numFrames) {
+      gif.setFrame(currentFrame)
+      currentFrameImage = gif.get()
+    }
     gifFrameTimer -= 1000 / fps
   }
 
