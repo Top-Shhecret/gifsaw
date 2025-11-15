@@ -118,18 +118,18 @@ function setup() {
 
   let modeButton = createButton(buttonText)
   modeButton.position(width - 100, 10)
-  modeButton.size
   modeButton.mousePressed(changeMode)
 }
 
 function changeMode() {
-  if (modeButton.text === "Select Mode") {
-    modeButton.text = "Drag Mode"
+  if (buttonText === "Select Mode") {
+    buttonText = "Drag Mode"
     releaseModeDrag = false
   } else {
-    modeButton.text = "SelectMode"
+    buttonText = "SelectMode"
     releaseModeDrag = true
   }
+  modeButton.html(buttonText)
 }
 
 function checkPuzzleComplete() {
