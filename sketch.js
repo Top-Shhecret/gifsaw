@@ -572,7 +572,7 @@ function mouseReleased() {
 }
 
 function checkSnap(index) {
-  const snapDist = 20
+  const snapDist = 15
   const pw = pieceW
   const ph = pieceH
 
@@ -597,6 +597,8 @@ function checkSnap(index) {
     if (dist < snapDist) {
       alignGroups(piece.index, neighbor.index, dir)
       mergeGroups(piece.index, neighbor.index)
+      draggingPiece = null
+      draggingGroup = []
     }
   }
 }
