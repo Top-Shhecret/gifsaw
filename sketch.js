@@ -280,7 +280,7 @@ function draw() {
   gifFrameTimer += deltaTime
   if (gifFrameTimer >= 1000 / fps) {
     currentFrame = (currentFrame + 1) % numFrames
-    gifFrameTimer = 0
+    gifFrameTimer -= 1000 / fps
   }
 
   if (gif.numFrames) gif.setFrame(currentFrame)
