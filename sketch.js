@@ -116,7 +116,7 @@ function setup() {
   }
   timerInterval = setInterval(timeIt, 1000)
 
-  let modeButton = createButton(buttonText)
+  modeButton = createButton(buttonText)
   modeButton.position(width - 100, 10)
   modeButton.mousePressed(changeMode)
 }
