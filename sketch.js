@@ -59,7 +59,7 @@ function setup() {
   let scaleFactor = sqrt(targetArea / gifArea)
 
   gif.resize(gif.width * scaleFactor, gif.height * scaleFactor)
-  frameRate(60)
+  frameRate(30)
 
   numFrames = gif.numFrames ? gif.numFrames() : 1
   currentFrame = 0
@@ -285,18 +285,6 @@ function draw() {
     currentFrameImage = gif.get()
     frameCounter = 0
   }
-
-  // Gif timing changes
-  //gifFrameTimer += deltaTime
-  //if (gifFrameTimer >= 1000 / fps) {
-  //currentFrame = (currentFrame + 1) % numFrames
-  //if (gif.numFrames) {
-  //gif.setFrame(currentFrame)
-  //currentFrameImage = gif.get()
-  //}
-  //gifFrameTimer -= 1000 / fps
-  //}
-
 
   for (let i = 0; i < pieces.length; i++) {
     if (draggingPiece !== null && draggingGroup.includes(i)) continue
