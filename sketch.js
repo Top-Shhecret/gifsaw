@@ -524,9 +524,9 @@ function mousePressed() {
   }
 
   if (draggingPiece !== null) {
-    draggingPiece = null;
-    draggingGroup = [];
-    return;
+    draggingPiece = null
+    draggingGroup = []
+    return
   }
 
   for (let i = pieces.length - 1; i >= 0; i--) {
