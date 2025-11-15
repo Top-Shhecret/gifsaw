@@ -523,27 +523,29 @@ function mousePressed() {
     getAudioContext().resume()
   }
 
+  // In Select Mode, clicking releases the current group
   if (releaseModeDrag === false && draggingPiece !== null) {
     draggingPiece = null;
     draggingGroup = [];
     return;
   }
 
+  // In Drag Mode, don't allow picking up a new group while dragging
   if (releaseModeDrag === true && draggingPiece !== null) {
     return
   }
 
+  // Find which piece/group was clicked
   for (let i = pieces.length - 1; i >= 0; i--) {
     let p = pieces[i];
-    let group = p.group.map(idx => pieces[idx]);
 
-    // Compute merged group bounding box
-    let minX = Math.min(...group.map(g => g.x));
-    let minY = Math.min(...group.map(g => g.y));
-    let maxX = Math.max(...group.map(g => g.x + pieceW));
-    let maxY = Math.max(...group.map(g => g.y + pieceH));
+    // Check if mouse is within this piece's bounds
+    let { extendLeft, extendUp, bufferW, bufferH } = p.extends;
+    let px = p.x - extendLeft;
+    let py = p.y - extendUp;
 
-    if (mouseX >= minX && mouseX <= maxX && mouseY >= minY && mouseY <= maxY) {
+    if (mouseX >= px && mouseX <= px + bufferW &&
+      mouseY >= py && mouseY <= py + bufferH) {
 
       // Select this whole group
       draggingPiece = i;
@@ -554,7 +556,6 @@ function mousePressed() {
       return;
     }
   }
-
 }
 
 function mouseReleased() {
