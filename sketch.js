@@ -8,6 +8,7 @@ let currentFrameImage
 let pieces = []
 let draggingPiece = null
 let draggingGroup = []
+let justSnapped = false
 let offsetX = 0
 let offsetY = 0
 const rotationConst = 1
@@ -316,10 +317,11 @@ function draw() {
       checkSnap(i)
     }
   }
+  justSnapped = false
 }
 
 function dragging() {
-  if (draggingPiece !== null) {
+  if (draggingPiece !== null && !justSnapped) {
     let basePiece = pieces[draggingPiece]
     let targetX = mouseX - offsetX
     let targetY = mouseY - offsetY
@@ -592,6 +594,7 @@ function checkSnap(index) {
     if (dist < snapDist) {
       alignGroups(piece.index, neighbor.index, dir)
       mergeGroups(piece.index, neighbor.index)
+      justSnapped = true
     }
   }
 }
