@@ -464,8 +464,8 @@ function mousePressed() {
     getAudioContext().resume()
   }
 
-  if (selectedPiece !== null) {
-    selectedPiece = null;
+  if (draggingPiece !== null) {
+    draggingPiece = null;
     draggingGroup = [];
     return;
   }
