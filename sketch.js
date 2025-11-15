@@ -596,10 +596,8 @@ function checkSnap(index) {
       mergeGroups(piece.index, neighbor.index)
       justSnapped = true
 
-      if (!releaseModeDrag) {
-        draggingPiece = null
-        draggingGroup = []
-      }
+      draggingPiece = null
+      draggingGroup = []
     }
   }
 }
