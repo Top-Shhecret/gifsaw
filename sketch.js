@@ -17,6 +17,9 @@ let click;
 let timerValue = 0;
 let timerInterval;
 
+let fps = 15
+let gifFrameTimer = 0
+
 function preload() {
   const params = new URLSearchParams(window.location.search);
   const gifUrl = params.get('gif_url');
@@ -57,7 +60,7 @@ function setup() {
   let scaleFactor = sqrt(targetArea / gifArea);
 
   gif.resize(gif.width * scaleFactor, gif.height * scaleFactor);
-  frameRate(30);
+  frameRate(60);
 
   numFrames = gif.numFrames ? gif.numFrames() : 1;
   currentFrame = 0;
@@ -271,6 +274,13 @@ function draw() {
 
   // Display the timer in H:MM:SS format
   text(hours + ':' + nf(minutes, 2) + ':' + nf(seconds, 2), width - 100, 40);
+
+  // Gif timing changes
+  gifFrameTimer += deltaTime
+  if (gifFrameTimer >= 1000 / gifFPS) {
+    currentFrame = (currentFrame + 1) % numFrames
+    gifFrameTimer = 0
+  }
 
   if (gif.numFrames) gif.setFrame(currentFrame);
   currentFrameImage = gif.get();
