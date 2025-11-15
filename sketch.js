@@ -277,7 +277,7 @@ function draw() {
 
   // Gif timing changes
   gifFrameTimer += deltaTime
-  if (gifFrameTimer >= 1000 / gifFPS) {
+  if (gifFrameTimer >= 1000 / fps) {
     currentFrame = (currentFrame + 1) % numFrames
     gifFrameTimer = 0
   }
