@@ -126,7 +126,7 @@ function changeMode() {
     buttonText = "Drag Mode"
     releaseModeDrag = false
   } else {
-    buttonText = "SelectMode"
+    buttonText = "Select Mode"
     releaseModeDrag = true
   }
   modeButton.html(buttonText)
