@@ -290,7 +290,38 @@ function draw() {
     if (draggingPiece !== null && draggingGroup.includes(i)) continue
     drawPieceFast(i)
   }
+
   if (draggingPiece !== null) {
+    let basePiece = pieces[draggingPiece]
+    let targetX = mouseX - offsetX
+    let targetY = mouseY - offsetY
+    let dx = targetX - basePiece.x
+    let dy = targetY - basePiece.y
+
+    // Get the group being moved
+    let group = draggingGroup.map(i => pieces[i])
+
+    // Compute bounding box of the group
+    let minX = min(group.map(p => p.x))
+    let minY = min(group.map(p => p.y))
+    let maxX = max(group.map(p => p.x + pieceW))
+    let maxY = max(group.map(p => p.y + pieceH))
+
+    // How far can the group move without going off the edges?
+    let allowedDx = dx
+    let allowedDy = dy
+
+    if (minX + dx < 0) allowedDx = -minX
+    if (maxX + dx > width) allowedDx = width - maxX
+    if (minY + dy < 0) allowedDy = -minY
+    if (maxY + dy > height) allowedDy = height - maxY
+
+    // Apply only the allowed movement to all pieces in the group
+    for (let p of group) {
+      p.x += allowedDx
+      p.y += allowedDy
+    }
+
     for (let i of draggingGroup) drawPieceFast(i)
   }
 }
