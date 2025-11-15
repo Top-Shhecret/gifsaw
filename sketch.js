@@ -523,37 +523,37 @@ function mousePressed() {
     getAudioContext().resume()
   }
 
-  // In Select Mode, clicking releases the current group
-  if (releaseModeDrag === false && draggingPiece !== null) {
+  if (draggingPiece !== null) {
     draggingPiece = null;
     draggingGroup = [];
     return;
   }
 
-  // In Drag Mode, don't allow picking up a new group while dragging
-  if (releaseModeDrag === true && draggingPiece !== null) {
-    return
-  }
-
-  // Find which piece/group was clicked
   for (let i = pieces.length - 1; i >= 0; i--) {
-    let p = pieces[i];
+    let p = pieces[i]
+    let tabSize = min(pieceW, pieceH) * globalTabSize
 
-    // Check if mouse is within this piece's bounds
-    let { extendLeft, extendUp, bufferW, bufferH } = p.extends;
-    let px = p.x - extendLeft;
-    let py = p.y - extendUp;
+    // Calculate max extension for hit detection
+    let maxExtendX = Math.max(
+      p.col > 0 && getEdgeType(p.row, p.col, 'left') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'left') : 0,
+      p.col < cols - 1 && getEdgeType(p.row, p.col, 'right') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'right') : 0
+    )
+    let maxExtendY = Math.max(
+      p.row > 0 && getEdgeType(p.row, p.col, 'up') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'up') : 0,
+      p.row < rows - 1 && getEdgeType(p.row, p.col, 'down') === 1 ? tabSize * getEdgeWidth(p.row, p.col, 'down') : 0
+    )
 
-    if (mouseX >= px && mouseX <= px + bufferW &&
-      mouseY >= py && mouseY <= py + bufferH) {
-
-      // Select this whole group
-      draggingPiece = i;
-      draggingGroup = p.group.slice();
-
-      offsetX = mouseX - p.x;
-      offsetY = mouseY - p.y;
-      return;
+    if (
+      mouseX > p.x - maxExtendX &&
+      mouseX < p.x + pieceW + maxExtendX &&
+      mouseY > p.y - maxExtendY &&
+      mouseY < p.y + pieceH + maxExtendY
+    ) {
+      draggingPiece = i
+      draggingGroup = p.group.slice()
+      offsetX = mouseX - p.x
+      offsetY = mouseY - p.y
+      break
     }
   }
 }
@@ -574,6 +574,7 @@ function checkSnap(index) {
   const ph = pieceH
 
   let piece = pieces[index]
+  if (piece.group === neighbor.group) continue
 
   for (let dir in piece.neighbors) {
     let neighborIndex = piece.neighbors[dir]
