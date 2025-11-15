@@ -280,11 +280,10 @@ function draw() {
   gifFrameTimer += deltaTime
   if (gifFrameTimer >= 1000 / fps) {
     currentFrame = (currentFrame + 1) % numFrames
+    if (gif.numFrames) gif.setFrame(currentFrame)
+    currentFrameImage = gif.get()
     gifFrameTimer -= 1000 / fps
   }
-
-  if (gif.numFrames) gif.setFrame(currentFrame)
-  currentFrameImage = gif.get()
 
   for (let i = 0; i < pieces.length; i++) {
     if (draggingPiece !== null && draggingGroup.includes(i)) continue
