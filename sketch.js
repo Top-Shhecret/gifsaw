@@ -572,7 +572,7 @@ function mouseReleased() {
 }
 
 function checkSnap(index) {
-  const snapDist = 15
+  const snapDist = 3
   const pw = pieceW
   const ph = pieceH
 
