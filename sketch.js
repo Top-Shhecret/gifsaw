@@ -312,7 +312,10 @@ function draw() {
     dragging()
   }
   if (draggingPiece !== null) {
-    for (let i of draggingGroup) drawPieceFast(i)
+    for (let i of draggingGroup) {
+      drawPieceFast(i)
+      checkSnap(i)
+    }
   }
 }
 
