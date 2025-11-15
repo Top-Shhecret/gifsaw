@@ -572,7 +572,7 @@ function mouseReleased() {
 }
 
 function checkSnap(index) {
-  const snapDist = 3
+  const snapDist = 1
   const pw = pieceW
   const ph = pieceH
 
@@ -599,8 +599,10 @@ function checkSnap(index) {
       mergeGroups(piece.index, neighbor.index)
 
       if (releaseModeDrag === false) {
-        draggingPiece = null
-        draggingGroup = []
+        //draggingPiece = null
+        //draggingGroup = []
+        offsetX = mouseX - piece.x;
+        offsetY = mouseY - piece.y;
       }
     }
   }
