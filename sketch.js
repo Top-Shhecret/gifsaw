@@ -597,8 +597,11 @@ function checkSnap(index) {
     if (dist < snapDist) {
       alignGroups(piece.index, neighbor.index, dir)
       mergeGroups(piece.index, neighbor.index)
-      draggingPiece = null
-      draggingGroup = []
+
+      if (releaseModeDrag === false) {
+        draggingPiece = null
+        draggingGroup = []
+      }
     }
   }
 }
