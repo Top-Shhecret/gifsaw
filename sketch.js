@@ -308,9 +308,8 @@ function draw() {
     drawPieceFast(i)
   }
 
-  if (releaseModeDrag === false) {
-    dragging()
-  }
+  dragging()
+
   if (draggingPiece !== null) {
     for (let i of draggingGroup) {
       drawPieceFast(i)
@@ -557,10 +556,6 @@ function mousePressed() {
   }
 }
 
-function mouseDragged() {
-  dragging()
-}
-
 function mouseReleased() {
   if (releaseModeDrag === true) {
     if (draggingPiece !== null) {
@@ -597,13 +592,6 @@ function checkSnap(index) {
     if (dist < snapDist) {
       alignGroups(piece.index, neighbor.index, dir)
       mergeGroups(piece.index, neighbor.index)
-
-      //if (releaseModeDrag === false) {
-      draggingPiece = null
-      draggingGroup = []
-      //offsetX = mouseX - piece.x;
-      //offsetY = mouseY - piece.y;
-      //}
     }
   }
 }
