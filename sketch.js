@@ -18,6 +18,7 @@ let click
 let timerValue = 0
 let timerInterval
 let frameCounter = 0
+let releaseModeDrag = false
 
 function preload() {
   const params = new URLSearchParams(window.location.search)
@@ -280,7 +281,6 @@ function draw() {
 
   if (frameCounter % 2 === 0) {
     currentFrame = (currentFrame + 1) % numFrames
-    console.log(currentFrame)
     if (gif.numFrames) gif.setFrame(currentFrame)
     currentFrameImage = gif.get()
     frameCounter = 0
@@ -463,6 +463,13 @@ function mousePressed() {
   if (getAudioContext().state !== 'running') {
     getAudioContext().resume()
   }
+
+  if (selectedPiece !== null) {
+    selectedPiece = null;
+    draggingGroup = [];
+    return;
+  }
+
   for (let i = pieces.length - 1; i >= 0; i--) {
     let p = pieces[i]
     let tabSize = min(pieceW, pieceH) * globalTabSize
@@ -527,10 +534,12 @@ function mouseDragged() {
 }
 
 function mouseReleased() {
-  if (draggingPiece !== null) {
-    for (let i of draggingGroup) checkSnap(i)
-    draggingPiece = null
-    draggingGroup = []
+  if (releaseModeDrag === true) {
+    if (draggingPiece !== null) {
+      for (let i of draggingGroup) checkSnap(i)
+      draggingPiece = null
+      draggingGroup = []
+    }
   }
 }
 
