@@ -278,7 +278,7 @@ function draw() {
 
   frameCounter++
 
-  if (frameCounter % 4 === 0) {
+  if (frameCounter % 2 === 0) {
     currentFrame = (currentFrame + 1) % numFrames
     console.log(currentFrame)
     if (gif.numFrames) gif.setFrame(currentFrame)
