@@ -574,12 +574,12 @@ function checkSnap(index) {
   const ph = pieceH
 
   let piece = pieces[index]
-  if (piece.group === neighbor.group) return
 
   for (let dir in piece.neighbors) {
     let neighborIndex = piece.neighbors[dir]
     let neighbor = pieces[neighborIndex]
     if (!neighbor) continue
+    if (piece.group === neighbor.group) continue
 
     let expectedX = piece.x
     let expectedY = piece.y
