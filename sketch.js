@@ -532,6 +532,7 @@ function mousePressed() {
   if (releaseModeDrag === true && draggingPiece !== null) {
     return
   }
+
   for (let i = pieces.length - 1; i >= 0; i--) {
     let p = pieces[i];
     let group = p.group.map(idx => pieces[idx]);
@@ -553,6 +554,7 @@ function mousePressed() {
       return;
     }
   }
+
 }
 
 function mouseReleased() {
