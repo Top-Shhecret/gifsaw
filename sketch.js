@@ -22,6 +22,7 @@ let frameCounter = 0
 let releaseModeDrag = true
 let buttonText = "Select Mode"
 let modeButton
+let local = true // Testing
 
 function preload() {
   const params = new URLSearchParams(window.location.search)
@@ -37,12 +38,16 @@ function preload() {
 
   const url = gifUrl || 'https://media1.giphy.com/media/Y8dKrq2sDjQ5y/giphy.gif'
 
-  gif = loadImage(
-    url,
-    onLoad,
-    onError,
-    { crossOrigin: '' }
-  )
+  if (!local) {
+    gif = loadImage(
+      url,
+      onLoad,
+      onError,
+      { crossOrigin: '' }
+    )
+  } else {
+    gif = loadImage('puzzle.gif')
+  }
 
   click = loadSound('click.mp3')
 }
@@ -294,6 +299,7 @@ function draw() {
 
   // Display the timer in H:MM:SS format
   text(hours + ':' + nf(minutes, 2) + ':' + nf(seconds, 2), width - 100, 100)
+  if (local) text('fps: ' + nf(frameRate(), 2, 0), width - 100, 300) // local
 
   frameCounter++
 
