@@ -6,15 +6,19 @@ let currentFrame
 let currentFrameImage
 
 let pieces = []
+let edgeConfigs = []
+let cachedFrames = []
+
 let draggingPiece = null
 let draggingGroup = []
 let justSnapped = false
 let offsetX = 0
+
 let offsetY = 0
 const rotationConst = 1
 const globalTabSize = 0.30
 const idealTotalPieces = 60
-let edgeConfigs = []
+
 let click
 let timerValue = 0
 let timerInterval
@@ -92,7 +96,7 @@ function setup() {
       randY = random(height - pieceH * 1.5)
       overlaps = placedPositions.some(p => abs(randX - p.x) < pieceW * 1.2 && abs(randY - p.y) < pieceH * 1.2)
       attempts++
-    } while (overlaps && attempts < 500)
+    } while (overlaps && attempts < 500) // TODO: replace with edges maybe
     placedPositions.push({ x: randX, y: randY })
   }
 
@@ -150,6 +154,21 @@ function checkPuzzleComplete() {
   }
   return true
 }
+
+function updateFrameCache() {
+  let arr = []
+  for (let p of pieces) {
+    let { extendLeft, extendUp, bufferW, bufferH } = p.extends
+    let sx = p.col * pieceW - extendLeft
+    let sy = p.row * pieceH - extendUp
+
+    let pieceImg = currentFrameImage.get(sx, sy, bufferW, bufferH)
+    pieceImg.mask(p.mask)
+    arr.push(pieceImg)
+  }
+  cachedFrames[currentFrame] = arr
+}
+
 
 function cachePieceMask(p) {
   let leftType = getEdgeType(p.row, p.col, 'left')
@@ -307,6 +326,7 @@ function draw() {
     currentFrame = (currentFrame + 1) % numFrames
     if (gif.numFrames) gif.setFrame(currentFrame)
     currentFrameImage = gif.get()
+    updateFrameCache()
     frameCounter = 0
   }
 
@@ -367,7 +387,8 @@ function drawPieceFast(i) {
   // Get cropped piece from current frame
   let sx = p.col * pieceW - extendLeft
   let sy = p.row * pieceH - extendUp
-  let imgPiece = currentFrameImage.get(sx, sy, bufferW, bufferH)
+  //let imgPiece = currentFrameImage.get(sx, sy, bufferW, bufferH)
+  let imgPiece = cachedFrames[currentFrame][i]
   imgPiece.mask(p.mask)
 
   // Draw the masked image
