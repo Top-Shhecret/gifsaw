@@ -31,15 +31,15 @@ let local = false; // Testing
 function preload() {
   const params = new URLSearchParams(window.location.search);
   const gifUrl = params.get('gif_url');
-  
+
   const url = gifUrl || 'https://media1.giphy.com/media/Y8dKrq2sDjQ5y/giphy.gif';
-  
+
   if (!local) {
     gif = loadImage(url, () => console.log('GIF loaded'), (err) => console.error(err), { crossOrigin: '' });
   } else {
     gif = loadImage('puzzle.gif');
   }
-  
+
   click = loadSound('click.mp3');
 }
 
@@ -52,7 +52,7 @@ function setup() {
   textAlign(CENTER, CENTER);
   textSize(50);
 
-  let scaleFactor = sqrt((windowWidth * windowHeight * 0.3) / (gif.width * gif.height));
+  let scaleFactor = sqrt((windowWidth * windowHeight * 0.25) / (gif.width * gif.height));
   gif.resize(gif.width * scaleFactor, gif.height * scaleFactor);
 
   numFrames = gif.numFrames ? gif.numFrames() : 1;
@@ -329,26 +329,26 @@ function drawTab(pg, x1, y1, x2, y2, offset, orientation, angleDeg = 0, widthMul
   if (orientation === 'horizontal') {
     let midX = (x1 + x2) / 2, dir = x2 > x1 ? 1 : -1;
     pts = [
-      [midX - stemWidth*dir, y1 + bulbStart*0.8, midX - stemWidth*dir, y1 + bulbStart*0.9, midX - stemWidth*dir, y1 + bulbStart],
-      [midX - stemWidth*dir, y1 + bulbStart + (tabDepth - bulbStart)*0.3, midX - bulbRadius*0.8*dir, y1 + tabDepth*0.6, midX - bulbRadius*dir, y1 + tabDepth*0.9],
-      [midX - bulbRadius*0.6*dir, y1 + tabDepth, midX + bulbRadius*0.6*dir, y1 + tabDepth, midX + bulbRadius*dir, y1 + tabDepth*0.9],
-      [midX + bulbRadius*0.8*dir, y1 + tabDepth*0.6, midX + stemWidth*dir, y1 + bulbStart + (tabDepth - bulbStart)*0.3, midX + stemWidth*dir, y1 + bulbStart],
-      [midX + stemWidth*dir, y1 + bulbStart*0.9, midX + stemWidth*dir, y1 + bulbStart*0.7, x2, y2]
+      [midX - stemWidth * dir, y1 + bulbStart * 0.8, midX - stemWidth * dir, y1 + bulbStart * 0.9, midX - stemWidth * dir, y1 + bulbStart],
+      [midX - stemWidth * dir, y1 + bulbStart + (tabDepth - bulbStart) * 0.3, midX - bulbRadius * 0.8 * dir, y1 + tabDepth * 0.6, midX - bulbRadius * dir, y1 + tabDepth * 0.9],
+      [midX - bulbRadius * 0.6 * dir, y1 + tabDepth, midX + bulbRadius * 0.6 * dir, y1 + tabDepth, midX + bulbRadius * dir, y1 + tabDepth * 0.9],
+      [midX + bulbRadius * 0.8 * dir, y1 + tabDepth * 0.6, midX + stemWidth * dir, y1 + bulbStart + (tabDepth - bulbStart) * 0.3, midX + stemWidth * dir, y1 + bulbStart],
+      [midX + stemWidth * dir, y1 + bulbStart * 0.9, midX + stemWidth * dir, y1 + bulbStart * 0.7, x2, y2]
     ];
   } else {
-    let midY = (y1 + y2)/2, dir = y2 > y1 ? 1 : -1;
+    let midY = (y1 + y2) / 2, dir = y2 > y1 ? 1 : -1;
     pts = [
-      [x1 + bulbStart*0.7, midY - stemWidth*dir, x1 + bulbStart*0.9, midY - stemWidth*dir, x1 + bulbStart, midY - stemWidth*dir],
-      [x1 + bulbStart + (tabDepth-bulbStart)*0.3, midY - stemWidth*dir, x1 + tabDepth*0.6, midY - bulbRadius*0.8*dir, x1 + tabDepth*0.9, midY - bulbRadius*dir],
-      [x1 + tabDepth, midY - bulbRadius*0.6*dir, x1 + tabDepth, midY + bulbRadius*0.6*dir, x1 + tabDepth*0.9, midY + bulbRadius*dir],
-      [x1 + tabDepth*0.6, midY + bulbRadius*0.8*dir, x1 + bulbStart + (tabDepth-bulbStart)*0.3, midY + stemWidth*dir, x1 + bulbStart, midY + stemWidth*dir],
-      [x1 + bulbStart*0.9, midY + stemWidth*dir, x1 + tabDepth*0.15, midY + stemWidth*dir, x2, y2]
+      [x1 + bulbStart * 0.7, midY - stemWidth * dir, x1 + bulbStart * 0.9, midY - stemWidth * dir, x1 + bulbStart, midY - stemWidth * dir],
+      [x1 + bulbStart + (tabDepth - bulbStart) * 0.3, midY - stemWidth * dir, x1 + tabDepth * 0.6, midY - bulbRadius * 0.8 * dir, x1 + tabDepth * 0.9, midY - bulbRadius * dir],
+      [x1 + tabDepth, midY - bulbRadius * 0.6 * dir, x1 + tabDepth, midY + bulbRadius * 0.6 * dir, x1 + tabDepth * 0.9, midY + bulbRadius * dir],
+      [x1 + tabDepth * 0.6, midY + bulbRadius * 0.8 * dir, x1 + bulbStart + (tabDepth - bulbStart) * 0.3, midY + stemWidth * dir, x1 + bulbStart, midY + stemWidth * dir],
+      [x1 + bulbStart * 0.9, midY + stemWidth * dir, x1 + tabDepth * 0.15, midY + stemWidth * dir, x2, y2]
     ];
   }
 
   for (let cp of pts) {
-    let [x1r,y1r] = rv(cp[0],cp[1]), [x2r,y2r] = rv(cp[2],cp[3]), [x3r,y3r] = rv(cp[4],cp[5]);
-    pg.bezierVertex(x1r,y1r,x2r,y2r,x3r,y3r);
+    let [x1r, y1r] = rv(cp[0], cp[1]), [x2r, y2r] = rv(cp[2], cp[3]), [x3r, y3r] = rv(cp[4], cp[5]);
+    pg.bezierVertex(x1r, y1r, x2r, y2r, x3r, y3r);
   }
 }
 
