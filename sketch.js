@@ -63,7 +63,6 @@ function setup() {
 
   let scaleFactor = min(areaScale, maxScaleWidth, maxScaleHeight);
 
-  let scaleFactor = sqrt((windowWidth * windowHeight * 0.25) / (gif.width * gif.height));
   gif.resize(gif.width * scaleFactor, gif.height * scaleFactor);
 
   numFrames = gif.numFrames ? gif.numFrames() : 1;
