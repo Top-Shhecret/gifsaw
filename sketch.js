@@ -1,9 +1,10 @@
+
 let gif;
 let cols, rows;
 let pieceW, pieceH;
+
 let numFrames;
 let currentFrame;
-let currentFrameImage;
 
 let pieces = [];
 let edgeConfigs = [];
@@ -15,7 +16,7 @@ let justSnapped = false;
 let offsetX = 0;
 let offsetY = 0;
 
-const rotationConst = 1;
+const rotationConst = 1; //not even used
 const globalTabSize = 0.30;
 const idealTotalPieces = 120;
 
@@ -23,10 +24,12 @@ let click;
 let timerValue = 0;
 let timerInterval;
 let frameCounter = 0;
+
 let releaseModeDrag = true;
 let buttonText = "Select Mode";
 let modeButton;
-let local = false; // Testing
+
+let local = true; // Testing
 
 function preload() {
   const params = new URLSearchParams(window.location.search);
@@ -46,28 +49,37 @@ function preload() {
 function timeIt() { timerValue++; }
 
 function setup() {
-  pixelDensity(1);
-  noSmooth();
   createCanvas(windowWidth, windowHeight);
   textAlign(CENTER, CENTER);
   textSize(50);
+  
+  let areaScale = sqrt(
+    (windowWidth * windowHeight * 0.3) /
+    (gif.width * gif.height)
+  );
 
-  let scaleFactor = sqrt((windowWidth * windowHeight * 0.3) / (gif.width * gif.height));
+  // Clamping max and min so it stays on screen
+  let maxScaleWidth  = windowWidth  / gif.width;
+  let maxScaleHeight = windowHeight / gif.height;
+
+  let scaleFactor = min(areaScale, maxScaleWidth, maxScaleHeight);
+
   gif.resize(gif.width * scaleFactor, gif.height * scaleFactor);
 
   numFrames = gif.numFrames ? gif.numFrames() : 1;
   currentFrame = 0;
-  if (gif.numFrames) gif.setFrame(currentFrame);
-  currentFrameImage = gif.get();
 
   let aspectRatio = gif.width / gif.height;
+  // sqrt used for 
+  // cols = rows * aspectRatio
+  // rows * (rows * aspectRatio) = idealTotalPieces
   rows = round(sqrt(idealTotalPieces / aspectRatio));
   cols = round(idealTotalPieces / rows);
   pieceW = gif.width / cols;
   pieceH = gif.height / rows;
 
   generateEdgeConfigs();
-  initializePieces();
+  initialisePieces();
   cacheAllFrames();
 
   timerInterval = setInterval(timeIt, 1000);
@@ -75,6 +87,31 @@ function setup() {
   modeButton = createButton(buttonText);
   modeButton.position(width - 100, 10);
   modeButton.mousePressed(changeMode);
+}
+
+
+function generateEdgeConfigs() {
+  let hEdges = [], vEdges = [], hAngles = [], vAngles = [], hWidths = [], vWidths = [];
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols - 1; c++) {
+      const tabDir = random() > 0.5 ? 1 : -1;
+      hEdges.push(tabDir);
+      hAngles.push(random(-rotationConst, rotationConst));
+      hWidths.push(random(1, 1.4));
+    }
+  }
+
+  for (let r = 0; r < rows - 1; r++) {
+    for (let c = 0; c < cols; c++) {
+      const tabDir = random() > 0.5 ? 1 : -1;
+      vEdges.push(tabDir);
+      vAngles.push(random(-rotationConst, rotationConst));
+      vWidths.push(random(1, 1.4));
+    }
+  }
+
+  edgeConfigs = { h: hEdges, v: vEdges, hAngles, vAngles, hWidths, vWidths };
 }
 
 function cacheAllFrames() {
@@ -103,18 +140,18 @@ function changeMode() {
   modeButton.html(buttonText);
 }
 
-function initializePieces() {
+function initialisePieces() {
   const totalPieces = cols * rows;
   let placedPositions = [];
 
   for (let i = 0; i < totalPieces; i++) {
     let randX, randY, overlaps, attempts = 0;
     do {
-      randX = random(width - pieceW * 1.5);
-      randY = random(height - pieceH * 1.5);
+      randX = random(width - pieceW);
+      randY = random(height - pieceH);
       overlaps = placedPositions.some(p => abs(randX - p.x) < pieceW * 1.2 && abs(randY - p.y) < pieceH * 1.2);
       attempts++;
-    } while (overlaps && attempts < 500);
+    } while (overlaps && attempts < 10000);
     placedPositions.push({ x: randX, y: randY });
   }
 
@@ -150,14 +187,16 @@ function checkPuzzleComplete() {
 }
 
 function updateFrameCache() {
-  cachedFrames[currentFrame] = pieces.map(p => {
-    let { extendLeft, extendUp, bufferW, bufferH } = p.extends;
-    let sx = p.col * pieceW - extendLeft;
-    let sy = p.row * pieceH - extendUp;
-    let imgPiece = currentFrameImage.get(sx, sy, bufferW, bufferH);
-    imgPiece.mask(p.mask);
-    return imgPiece;
-  });
+  if (gif) {  
+    cachedFrames[currentFrame] = pieces.map(p => {
+      let { extendLeft, extendUp, bufferW, bufferH } = p.extends;
+      let sx = p.col * pieceW - extendLeft;
+      let sy = p.row * pieceH - extendUp; 
+      let imgPiece = gif.get().get(sx, sy, bufferW, bufferH);
+      imgPiece.mask(p.mask);
+      return imgPiece;
+    });
+  }
 }
 
 function cachePieceMask(p) {
@@ -176,35 +215,20 @@ function cachePieceMask(p) {
   let bufferH = pieceH + extendUp + extendDown;
 
   let mask = createGraphics(bufferW, bufferH);
-  mask.fill(255);
+  mask.clear()
+  mask.noStroke()
   drawPieceShape(mask, p.row, p.col, extendLeft, extendUp, pieceW, pieceH, leftType, rightType, upType, downType);
 
+  let outline = createGraphics(bufferW, bufferH)
+  outline.clear();
+  outline.noFill();
+  outline.stroke(0);
+  outline.strokeWeight(2);
+  drawPieceShape(outline, p.row, p.col, extendLeft, extendUp, pieceW, pieceH, leftType, rightType, upType, downType);
+
   p.mask = mask;
+  p.outline = outline
   p.extends = { extendLeft, extendUp, bufferW, bufferH };
-}
-
-function generateEdgeConfigs() {
-  let hEdges = [], vEdges = [], hAngles = [], vAngles = [], hWidths = [], vWidths = [];
-
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols - 1; c++) {
-      const tabDir = random() > 0.5 ? 1 : -1;
-      hEdges.push(tabDir);
-      hAngles.push(random(-rotationConst, rotationConst));
-      hWidths.push(random(1, 1.4));
-    }
-  }
-
-  for (let r = 0; r < rows - 1; r++) {
-    for (let c = 0; c < cols; c++) {
-      const tabDir = random() > 0.5 ? 1 : -1;
-      vEdges.push(tabDir);
-      vAngles.push(random(-rotationConst, rotationConst));
-      vWidths.push(random(1, 1.4));
-    }
-  }
-
-  edgeConfigs = { h: hEdges, v: vEdges, hAngles, vAngles, hWidths, vWidths };
 }
 
 function getEdgeType(row, col, side) {
@@ -232,8 +256,8 @@ function getEdgeWidth(row, col, side) {
 }
 
 function draw() {
-  background(220);
-
+  background(51);
+  fill(255)
   text(hours(timerValue) + ':' + nf(minutes(timerValue), 2) + ':' + nf(seconds(timerValue), 2), width - 100, 100);
   if (local) text('fps: ' + nf(frameRate(), 2, 0), width - 100, 300);
 
@@ -241,7 +265,6 @@ function draw() {
   if (frameCounter % 4 === 0) {
     currentFrame = (currentFrame + 1) % numFrames;
     if (gif.numFrames) gif.setFrame(currentFrame);
-    currentFrameImage = gif.get();
     frameCounter = 0;
   }
 
@@ -270,19 +293,7 @@ function drawPieceFast(i) {
   let { extendLeft, extendUp } = p.extends;
   let imgPiece = cachedFrames[currentFrame][i];
   image(imgPiece, p.x - extendLeft, p.y - extendUp);
-
-  push();
-  noFill();
-  stroke(0, 100);
-  strokeWeight(2);
-  translate(p.x - extendLeft, p.y - extendUp);
-  drawPieceShape(this, p.row, p.col, extendLeft, extendUp, pieceW, pieceH,
-    getEdgeType(p.row, p.col, "left"),
-    getEdgeType(p.row, p.col, "right"),
-    getEdgeType(p.row, p.col, "up"),
-    getEdgeType(p.row, p.col, "down")
-  );
-  pop();
+  image(p.outline, p.x - extendLeft, p.y - extendUp);
 }
 
 function drawPieceShape(pg, row, col, x, y, w, h, left, right, up, down) {
@@ -500,3 +511,6 @@ function mergeGroups(aIndex, bIndex) {
   }
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight)
+}
