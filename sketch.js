@@ -1,4 +1,3 @@
-
 let gif;
 let cols, rows;
 let pieceW, pieceH;
@@ -29,7 +28,7 @@ let releaseModeDrag = true;
 let buttonText = "Select Mode";
 let modeButton;
 
-let local = true; // Testing
+let local = false; // Testing
 
 function preload() {
   const params = new URLSearchParams(window.location.search);
