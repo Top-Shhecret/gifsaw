@@ -485,9 +485,18 @@ function checkSnap(index) {
     let dy = neighbor.y - expectedY;
     let dist = sqrt(dx * dx + dy * dy);
 
+    // Check which piece is moving to snap it to stationary pieces.
     if (dist < snapDist) {
-      alignGroups(piece.index, neighbor.index, dir);
-      mergeGroups(piece.index, neighbor.index);
+      const pieceIsDragged = draggingGroup.includes(piece.index);
+      if (pieceIsDragged) {
+        // Move dragged piece to stationary neighbor
+        alignGroups(neighbor.index, piece.index, oppositeDir(dir));
+        mergeGroups(neighbor.index, piece.index);
+      } else {
+        // Move dragged neighbor to stationary piece
+        alignGroups(piece.index, neighbor.index, dir);
+        mergeGroups(piece.index, neighbor.index);
+      }
       justSnapped = true;
       draggingPiece = null;
       draggingGroup = [];
@@ -532,6 +541,14 @@ function mergeGroups(aIndex, bIndex) {
     clearInterval(timerInterval);
     console.log("Puzzle complete in " + timerValue + " seconds!");
   }
+}
+
+// Helper function used for snapping to stationary pieces
+function oppositeDir(dir) {
+  if (dir === "left") return "right";
+  if (dir === "right") return "left";
+  if (dir === "up") return "down";
+  if (dir === "down") return "up";
 }
 
 function windowResized() {
