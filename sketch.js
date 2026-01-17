@@ -18,6 +18,7 @@ let offsetY = 0;
 const rotationConst = 1; //not even used
 const globalTabSize = 0.30;
 const idealTotalPieces = 120;
+const dividingPieceScale = 1.3;
 
 let click;
 let timerValue = 0;
@@ -74,8 +75,8 @@ function setup() {
   // rows * (rows * aspectRatio) = idealTotalPieces
   rows = round(sqrt(idealTotalPieces / aspectRatio));
   cols = round(idealTotalPieces / rows);
-  pieceW = gif.width / cols;
-  pieceH = gif.height / rows;
+  pieceW = gif.width / cols / dividingPieceScale;
+  pieceH = gif.height / rows / dividingPieceScale;
 
   generateEdgeConfigs();
   initialisePieces();
@@ -140,14 +141,37 @@ function changeMode() {
 }
 
 function initialisePieces() {
+  const edgeThickness = min(width, height) * 0.20; // 20% border
   const totalPieces = cols * rows;
   let placedPositions = [];
 
   for (let i = 0; i < totalPieces; i++) {
     let randX, randY, overlaps, attempts = 0;
     do {
-      randX = random(width - pieceW);
-      randY = random(height - pieceH);
+      const edge = floor(random(4)); // 0=top, 1=bottom, 2=left, 3=right
+
+      switch (edge) {
+        case 0: // top
+          randX = random(width - pieceW);
+          randY = random(edgeThickness - pieceH);
+          break;
+
+        case 1: // bottom
+          randX = random(width - pieceW);
+          randY = random(height - edgeThickness, height - pieceH);
+          break;
+
+        case 2: // left
+          randX = random(edgeThickness - pieceW);
+          randY = random(height - pieceH);
+          break;
+
+        case 3: // right
+          randX = random(width - edgeThickness, width - pieceW);
+          randY = random(height - pieceH);
+          break;
+      }
+
       overlaps = placedPositions.some(p => abs(randX - p.x) < pieceW * 1.2 && abs(randY - p.y) < pieceH * 1.2);
       attempts++;
     } while (overlaps && attempts < 10000);
