@@ -63,7 +63,7 @@ function setup() {
   let maxScaleHeight = windowHeight / gif.height;
 
   let scaleFactor = min(areaScale, maxScaleWidth, maxScaleHeight);
-
+  scaleFactor = scaleFactor / dividingPieceScale
   gif.resize(gif.width * scaleFactor, gif.height * scaleFactor);
 
   numFrames = gif.numFrames ? gif.numFrames() : 1;
@@ -75,8 +75,8 @@ function setup() {
   // rows * (rows * aspectRatio) = idealTotalPieces
   rows = round(sqrt(idealTotalPieces / aspectRatio));
   cols = round(idealTotalPieces / rows);
-  pieceW = gif.width / cols / dividingPieceScale;
-  pieceH = gif.height / rows / dividingPieceScale;
+  pieceW = gif.width / cols;
+  pieceH = gif.height / rows;
 
   generateEdgeConfigs();
   initialisePieces();
