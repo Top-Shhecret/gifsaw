@@ -29,7 +29,7 @@ let releaseModeDrag = true;
 let buttonText = "Select Mode";
 let modeButton;
 
-let local = false; // Testing
+let local = true; // Testing
 
 function preload() {
   const params = new URLSearchParams(window.location.search);
@@ -246,7 +246,7 @@ function cachePieceMask(p) {
   outline.clear();
   outline.noFill();
   outline.stroke(0);
-  outline.strokeWeight(2);
+  outline.strokeWeight(1);
   drawPieceShape(outline, p.row, p.col, extendLeft, extendUp, pieceW, pieceH, leftType, rightType, upType, downType);
 
   p.mask = mask;
