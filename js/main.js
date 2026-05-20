@@ -69,7 +69,8 @@ function setup() {
 
   gif.resize(gif.width * scaleFactor, gif.height * scaleFactor);
 
-  numFrames = max(1, gif.numFrames ? gif.numFrames() : 1);
+  let reportedFrames = gif.numFrames ? gif.numFrames() : 1;
+  numFrames = (reportedFrames > 0) ? reportedFrames : 1;
   currentFrame = 0;
 
   let aspectRatio = gif.width / gif.height;
