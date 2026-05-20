@@ -32,7 +32,7 @@ let releaseModeDrag = true;
 let buttonText = "Select Mode";
 let modeButton;
 
-let local = true; // Testing
+let local = false; // Testing
 
 // === LIFECYCLE ===
 
@@ -42,7 +42,7 @@ function preload() {
 
   const url = gifUrl || 'https://media1.giphy.com/media/Y8dKrq2sDjQ5y/giphy.gif';
 
-  assetUrl = local ? 'puzzle.webp' : url;
+  assetUrl = local ? 'puzzle.gif' : url;
   gif = loadImage(assetUrl, () => console.log('GIF loaded'), (err) => console.error(err), local ? undefined : { crossOrigin: '' });
 
   click = loadSound('click.mp3');
