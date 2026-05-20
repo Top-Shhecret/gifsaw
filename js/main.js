@@ -78,9 +78,14 @@ function setup() {
   pieceW = gif.width / cols;
   pieceH = gif.height / rows;
 
+  console.log('[gifsaw] gif dims:', gif.width, gif.height, 'numFrames:', numFrames, 'has gif.numFrames:', !!gif.numFrames);
+  console.log('[gifsaw] grid:', cols, 'x', rows, 'pieceW/H:', pieceW, pieceH);
+
   generateEdgeConfigs();
   initialisePieces();
+  console.log('[gifsaw] pieces created:', pieces.length, 'first piece:', pieces[0]);
   cacheAllFrames();
+  console.log('[gifsaw] cachedFrames:', cachedFrames.length, 'first frame entries:', cachedFrames[0]?.length);
   numFrames = max(1, cachedFrames.length); // sync to what was actually cached
 
   timerInterval = setInterval(timeIt, 1000);
