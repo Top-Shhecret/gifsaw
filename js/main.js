@@ -2,6 +2,7 @@
 
 // === GLOBALS ===
 let gif;
+let assetUrl; // remembered for async frame decoding
 let cols, rows;
 let pieceW, pieceH;
 
@@ -31,7 +32,7 @@ let releaseModeDrag = true;
 let buttonText = "Select Mode";
 let modeButton;
 
-let local = false; // Testing
+let local = true; // Testing
 
 // === LIFECYCLE ===
 
@@ -41,11 +42,8 @@ function preload() {
 
   const url = gifUrl || 'https://media1.giphy.com/media/Y8dKrq2sDjQ5y/giphy.gif';
 
-  if (!local) {
-    gif = loadImage(url, () => console.log('GIF loaded'), (err) => console.error(err), { crossOrigin: '' });
-  } else {
-    gif = loadImage('puzzle.gif');
-  }
+  assetUrl = local ? 'puzzle.webp' : url;
+  gif = loadImage(assetUrl, () => console.log('GIF loaded'), (err) => console.error(err), local ? undefined : { crossOrigin: '' });
 
   click = loadSound('click.mp3');
 }
@@ -79,14 +77,9 @@ function setup() {
   pieceW = gif.width / cols;
   pieceH = gif.height / rows;
 
-  console.log('[gifsaw] gif dims:', gif.width, gif.height, 'numFrames:', numFrames, 'has gif.numFrames:', !!gif.numFrames);
-  console.log('[gifsaw] grid:', cols, 'x', rows, 'pieceW/H:', pieceW, pieceH);
-
   generateEdgeConfigs();
   initialisePieces();
-  console.log('[gifsaw] pieces created:', pieces.length, 'first piece:', pieces[0]);
   cacheAllFrames();
-  console.log('[gifsaw] cachedFrames:', cachedFrames.length, 'first frame entries:', cachedFrames[0]?.length);
   numFrames = max(1, cachedFrames.length); // sync to what was actually cached
 
   timerInterval = setInterval(timeIt, 1000);
@@ -94,6 +87,43 @@ function setup() {
   modeButton = createButton(buttonText);
   modeButton.position(width - 100, 10);
   modeButton.mousePressed(changeMode);
+
+  decodeAnimatedFrames(); // fire-and-forget: replaces cache with all frames if image is animated
+}
+
+async function decodeAnimatedFrames() {
+  if (typeof ImageDecoder === 'undefined') return;
+  try {
+    const resp = await fetch(assetUrl);
+    const type = resp.headers.get('content-type') || 'image/webp';
+    const buf = await resp.arrayBuffer();
+    const decoder = new ImageDecoder({ data: buf, type });
+    await decoder.completed;
+    const frameCount = decoder.tracks.selectedTrack.frameCount;
+    if (frameCount <= 1) return;
+
+    const newFrames = [];
+    for (let f = 0; f < frameCount; f++) {
+      const { image: vframe } = await decoder.decode({ frameIndex: f });
+      gif.drawingContext.clearRect(0, 0, gif.width, gif.height);
+      gif.drawingContext.drawImage(vframe, 0, 0, gif.width, gif.height);
+      vframe.close();
+      const frameImg = gif.get();
+      const piecesImgs = pieces.map(p => {
+        const { extendLeft, extendUp, bufferW, bufferH } = p.extends;
+        const sx = floor(p.col * pieceW - extendLeft);
+        const sy = floor(p.row * pieceH - extendUp);
+        const imgPiece = frameImg.get(sx, sy, floor(bufferW), floor(bufferH));
+        imgPiece.mask(p.mask);
+        return imgPiece;
+      });
+      newFrames.push(piecesImgs);
+    }
+    cachedFrames = newFrames;
+    numFrames = frameCount;
+  } catch (e) {
+    console.error('[gifsaw] decode failed', e);
+  }
 }
 
 function changeMode() {
@@ -115,8 +145,10 @@ function draw() {
 
   frameCounter++;
   if (frameCounter % 4 === 0) {
-    currentFrame = (currentFrame + 1) % numFrames;
-    if (gif.numFrames) gif.setFrame(currentFrame);
+    if (numFrames > 1) {
+      currentFrame = (currentFrame + 1) % numFrames;
+      if (gif.numFrames && gif.numFrames() === numFrames) gif.setFrame(currentFrame); // only when p5 owns the frames too
+    }
     frameCounter = 0;
   }
 

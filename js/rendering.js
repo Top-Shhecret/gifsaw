@@ -9,9 +9,9 @@ function cacheAllFrames() {
     for (let i = 0; i < pieces.length; i++) {
       let p = pieces[i];
       let { extendLeft, extendUp, bufferW, bufferH } = p.extends;
-      let sx = p.col * pieceW - extendLeft;
-      let sy = p.row * pieceH - extendUp;
-      let imgPiece = frameImg.get(sx, sy, bufferW, bufferH);
+      let sx = floor(p.col * pieceW - extendLeft);
+      let sy = floor(p.row * pieceH - extendUp);
+      let imgPiece = frameImg.get(sx, sy, floor(bufferW), floor(bufferH));
       imgPiece.mask(p.mask);
       piecesImgs.push(imgPiece);
     }
@@ -20,16 +20,16 @@ function cacheAllFrames() {
 }
 
 function updateFrameCache() {
-  if (gif) {
-    cachedFrames[currentFrame] = pieces.map(p => {
-      let { extendLeft, extendUp, bufferW, bufferH } = p.extends;
-      let sx = p.col * pieceW - extendLeft;
-      let sy = p.row * pieceH - extendUp;
-      let imgPiece = gif.get().get(sx, sy, bufferW, bufferH);
-      imgPiece.mask(p.mask);
-      return imgPiece;
-    });
-  }
+  if (!gif) return;
+  let frameImg = gif.get(); // one full copy, reused across all pieces
+  cachedFrames[currentFrame] = pieces.map(p => {
+    let { extendLeft, extendUp, bufferW, bufferH } = p.extends;
+    let sx = floor(p.col * pieceW - extendLeft);
+    let sy = floor(p.row * pieceH - extendUp);
+    let imgPiece = frameImg.get(sx, sy, floor(bufferW), floor(bufferH));
+    imgPiece.mask(p.mask);
+    return imgPiece;
+  });
 }
 
 function drawPieceFast(i) {
