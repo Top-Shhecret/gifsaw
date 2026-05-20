@@ -35,7 +35,9 @@ function updateFrameCache() {
 function drawPieceFast(i) {
   let p = pieces[i];
   let { extendLeft, extendUp } = p.extends;
-  let imgPiece = cachedFrames[currentFrame][i];
+  let frame = cachedFrames[currentFrame];
+  if (!frame) return;
+  let imgPiece = frame[i];
   image(imgPiece, p.x - extendLeft, p.y - extendUp);
   image(p.outline, p.x - extendLeft, p.y - extendUp);
 }

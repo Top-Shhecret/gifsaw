@@ -81,6 +81,7 @@ function setup() {
   generateEdgeConfigs();
   initialisePieces();
   cacheAllFrames();
+  numFrames = max(1, cachedFrames.length); // sync to what was actually cached
 
   timerInterval = setInterval(timeIt, 1000);
 
@@ -96,6 +97,7 @@ function changeMode() {
 }
 
 function draw() {
+  if (!cachedFrames.length) return;
   background(51);
 
   // Draw workspace indicator
