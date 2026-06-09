@@ -98,6 +98,7 @@ async function decodeAnimatedFrames() {
     const type = resp.headers.get('content-type') || 'image/webp';
     const buf = await resp.arrayBuffer();
     const decoder = new ImageDecoder({ data: buf, type });
+    await decoder.tracks.ready;
     await decoder.completed;
     const frameCount = decoder.tracks.selectedTrack.frameCount;
     if (frameCount <= 1) return;
